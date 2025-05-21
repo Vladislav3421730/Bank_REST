@@ -1,0 +1,72 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005
+      author: admin
+      changes:
+        - sql:
+            sql: |
+              CREATE TYPE operation_type AS ENUM ('WITHDRAWAL', 'TRANSFER', 'RECHARGE');
+              CREATE TYPE operation_result_type AS ENUM ('SUCCESSFULLY', 'CARD_BLOCKED', 'CARD_EXPIRED', 'FAILED');
+        - createTable:
+            tableName: transaction
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: amount
+                  type: decimal(10,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: operation
+                  type: operation_type
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: operation_result
+                  type: operation_result_type
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: card_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: target_card_id
+                  type: uuid
+                  constraints:
+                    nullable: true
+
+              - column:
+                  name: timestamp
+                  type: timestamp
+                  defaultValueComputed: now()
+
+        - addForeignKeyConstraint:
+            constraintName: fk_transaction_card
+            baseTableName: transaction
+            baseColumnNames: card_id
+            referencedTableName: card
+            referencedColumnNames: id
+            onDelete: SET NULL
+            onUpdate: CASCADE
+
+        - addForeignKeyConstraint:
+            constraintName: fk_transaction_target_card
+            baseTableName: transaction
+            baseColumnNames: target_card_id
+            referencedTableName: card
+            referencedColumnNames: id
+            onDelete: SET NULL
+            onUpdate: CASCADE

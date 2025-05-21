@@ -1,0 +1,24 @@
+databaseChangeLog:
+  - include:
+      file: classpath:db/changelog/db.changelog-001-create-table-users.yaml
+
+  - include:
+      file: classpath:db/changelog/db.changelog-002-create-table-role.yaml
+
+  - include:
+      file: classpath:db/changelog/db.changelog-003-create-table-user-role.yaml
+
+  - include:
+      file: classpath:db/changelog/db.changelog-004-create-table-card.yaml
+
+  - include:
+      file: classpath:db/changelog/db.changelog-005-create-table-transaction.yaml
+
+  - include:
+      file: classpath:db/changelog/db.changelog-006-create-table-limit.yaml
+
+  - include:
+      file: classpath:db/changelog/db.changelog-007-create-table-block-request.yaml
+
+  - include:
+      file: classpath:db/changelog/db.changelog-008-insert-data.yaml

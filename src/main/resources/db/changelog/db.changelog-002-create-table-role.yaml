@@ -1,0 +1,36 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002
+      author: admin
+      changes:
+        - createSequence:
+            sequenceName: role_id_seq
+            startValue: 1
+            incrementBy: 1
+            cacheSize: 1
+
+        - createTable:
+            tableName: role
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  defaultValueComputed: nextval('role_id_seq')
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+
+        - addAutoIncrement:
+            tableName: role
+            columnName: id
+            columnDataType: BIGINT
+            incrementBy: 1
+            startWith: 1
+            generationType: SEQUENCE
+            defaultOnNull: true
+            sequenceName: role_id_seq

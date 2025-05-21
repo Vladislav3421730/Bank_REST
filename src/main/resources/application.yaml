@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: TestTaskEffectMobile
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/bank
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+jwt:
+  secret: 984hg493gh0439rthr0429uruj2309yh937gc763fe87t3f89723gf
+  lifetime: 30m
+
+card:
+  secret-key: 32882AYUGUUYDUYH
+  algorithm: AES/CBC/PKCS5Padding
+  iv-length: 16
+  encryption: AES
+  hashing: SHA-256
+
+logging:
+  file:
+    name: application.log
+  level:
+    root: INFO
+
+cors:
+  url: http://localhost:3000
+
+server:
+  port: 8080

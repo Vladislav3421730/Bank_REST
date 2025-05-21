@@ -1,1 +1,1635 @@
-# Здесь будет OpenAPI описание всех доступных эндпоинтов и моделей данных.
+openapi: 3.0.1
+info:
+  title: Bank management system
+  description: api for managing user's cards
+  contact:
+    name: Panasik Uladzislau
+    url: https://github.com/Vladislav3421730
+    email: panasikvladislav1@gmail.com
+  version: 1.0.1
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+tags:
+  - name: Block Requests Management
+    description: Operations for managing block card requests
+  - name: Transfer Management
+    description: Endpoints for executing transfers
+  - name: Limit Management
+    description: Endpoints for managing daily and monthly spending limits
+  - name: Transaction Management
+    description: Endpoints for viewing and managing user transactions
+  - name: Authentication
+    description: Endpoints for user authentication and authorization (login, registration)
+  - name: Users Management
+    description: Endpoints for managing users (delete, ban/unban)
+  - name: Card Management
+    description: Endpoints for managing cards (create, delete, get, update status)
+paths:
+  /api/v1/limit/monthly:
+    put:
+      tags:
+        - Limit Management
+      summary: Set monthly limit
+      description: Updates the user's monthly spending limit
+      operationId: setMonthLimit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LimitRequestDto'
+        required: true
+      responses:
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FieldErrorDto'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/limit/daily:
+    put:
+      tags:
+        - Limit Management
+      summary: Set daily limit
+      description: Updates the user's daily spending limit
+      operationId: setDayLimit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LimitRequestDto'
+        required: true
+      responses:
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FieldErrorDto'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/block/{id}/status:
+    put:
+      tags:
+        - Block Requests Management
+      summary: Update block request status
+      description: Updates the status of an existing block request (e.g., COMPLETED). If COMPLETED, card status will be set to BLOCKED.
+      operationId: changeStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlockCardRequestDto'
+        required: true
+      responses:
+        '200':
+          description: Status was changed successfully
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/BlockRequestDto'
+        '400':
+          description: Invalid status value
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/transfer:
+    post:
+      tags:
+        - Transfer Management
+      summary: Transfer funds
+      description: Transfer money from one card to another
+      operationId: transfer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferRequestDto'
+        required: true
+      responses:
+        '200':
+          description: Transfer was executed successfully
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/TransferResponseDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '404':
+          description: Card not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/transfer/withdrawal:
+    post:
+      tags:
+        - Transfer Management
+      summary: Withdraw money
+      description: Initiate a withdrawal transaction for the current user
+      operationId: withdrawal
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WithdrawalRequestDto'
+        required: true
+      responses:
+        '200':
+          description: Transfer was executed successfully
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/WithdrawalResponseDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '404':
+          description: Card not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/transfer/recharge:
+    post:
+      tags:
+        - Transfer Management
+      summary: Recharge card
+      description: Recharge a card with a specified amount for the current user
+      operationId: recharge
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RechargeRequestDto'
+        required: true
+      responses:
+        '200':
+          description: Transfer was executed successfully
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/RechargeResponseDto'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '404':
+          description: Card not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/cards:
+    get:
+      tags:
+        - Card Management
+      summary: Find all cards
+      operationId: findAll
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+        - name: minBalance
+          in: query
+          required: false
+          schema:
+            type: number
+        - name: maxBalance
+          in: query
+          required: false
+          schema:
+            type: number
+        - name: expiredBefore
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: expiredAfter
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: List of cards returned successfully
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PagedModel'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+    post:
+      tags:
+        - Card Management
+      summary: Add new card
+      description: Creates and saves a new card
+      operationId: saveCard
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCardRequestDto'
+        required: true
+      responses:
+        '201':
+          description: Card successfully created
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CardDto'
+        '400':
+          description: Invalid card data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Registration
+      description: Registers a user and returns the registered user
+      operationId: registerUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterUserRequestDto'
+        required: true
+      responses:
+        '201':
+          description: Successfully registered user
+        '400':
+          description: Registration failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+  /api/v1/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: User login
+      description: Authenticates user and returns a Access
+      operationId: createToken
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginUserRequestDto'
+        required: true
+      responses:
+        '200':
+          description: Successfully authenticated
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/JwtResponseDto'
+        '400':
+          description: Invalid login credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+  /api/v1/users/{id}/ban:
+    patch:
+      tags:
+        - Users Management
+      summary: Ban or unban user
+      description: Updates the banned status of a user
+      operationId: banUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BannedRequestDto'
+        required: true
+      responses:
+        '204':
+          description: User ban status updated successfully
+        '400':
+          description: Invalid request body
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FieldErrorDto'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/cards/{id}/status:
+    patch:
+      tags:
+        - Card Management
+      summary: Update card status
+      description: Changes the status of a card (e.g., ACTIVE, BLOCKED)
+      operationId: changeStatus_1
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatusCardRequestDto'
+        required: true
+      responses:
+        '200':
+          description: Card status successfully updated
+        '400':
+          description: Invalid status value
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '404':
+          description: Card not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/block/{cardId}:
+    patch:
+      tags:
+        - Block Requests Management
+      summary: Create a block request for a card
+      description: Creates a block request for the specified card ID if not blocked yet and if 7 days passed since last request
+      operationId: createBlockRequest
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '201':
+          description: Block request was created successfully
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/users:
+    get:
+      tags:
+        - Users Management
+      summary: Find all users
+      operationId: findAll_1
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+      responses:
+        '200':
+          description: List of users returned successfully
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PagedModel'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/users/{id}:
+    get:
+      tags:
+        - Users Management
+      summary: Get user by ID
+      description: Retrieve user information by their unique identifier
+      operationId: findById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: User found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+    delete:
+      tags:
+        - Users Management
+      summary: Delete user
+      description: Deletes a user by their ID
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: User successfully deleted
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '404':
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/transaction:
+    get:
+      tags:
+        - Transaction Management
+      summary: Get all transactions
+      description: Retrieve a paginated list of all transactions
+      operationId: findAll_2
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+        - name: minAmount
+          in: query
+          required: false
+          schema:
+            type: number
+        - name: maxAmount
+          in: query
+          required: false
+          schema:
+            type: number
+        - name: operation
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: operationResult
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully find transaction
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PagedModel'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/transaction/{userId}/user:
+    get:
+      tags:
+        - Transaction Management
+      summary: Get transactions by user ID
+      description: Retrieve transactions associated with a specific user ID
+      operationId: findAllByUserId
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+      responses:
+        '200':
+          description: Successfully find transaction
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PagedModel'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '404':
+          description: Transactions not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/transaction/{cardId}:
+    get:
+      tags:
+        - Transaction Management
+      summary: Get transactions by card ID
+      description: Retrieve transactions associated with a specific card ID
+      operationId: findAllByCardId
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+      responses:
+        '200':
+          description: Successfully find transaction
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PagedModel'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '404':
+          description: Transactions not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/transaction/me:
+    get:
+      tags:
+        - Transaction Management
+      summary: Get current user's transactions
+      description: Retrieve transactions of the currently authenticated user
+      operationId: findAllUsersTransactions
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+      responses:
+        '200':
+          description: Successfully find transaction
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PagedModel'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/transaction/me/{cardId}:
+    get:
+      tags:
+        - Transaction Management
+      summary: Get current user's transactions by card ID
+      description: Retrieve current user's transactions for a specific card
+      operationId: findAllUsersTransactionsByCardId
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+      responses:
+        '200':
+          description: Successfully find transaction
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PagedModel'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '404':
+          description: Transactions not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/cards/{id}:
+    get:
+      tags:
+        - Card Management
+      summary: Get card by ID
+      description: Retrieve card information by their unique identifier
+      operationId: findById_1
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: card found
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CardDto'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '404':
+          description: Card not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+    delete:
+      tags:
+        - Card Management
+      summary: Delete card
+      description: Deletes a card by its ID
+      operationId: deleteCard
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Card successfully deleted
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '404':
+          description: Card not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/cards/me:
+    get:
+      tags:
+        - Card Management
+      summary: Find all cards for authorized user
+      operationId: findAllUserCards
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+        - name: minBalance
+          in: query
+          required: false
+          schema:
+            type: number
+        - name: maxBalance
+          in: query
+          required: false
+          schema:
+            type: number
+        - name: expiredBefore
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: expiredAfter
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: List of cards returned successfully
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PagedModel'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/block:
+    get:
+      tags:
+        - Block Requests Management
+      summary: Get all block requests with pagination
+      description: Returns a paginated list of all block requests
+      operationId: findAll_3
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+      responses:
+        '200':
+          description: Requests were found successfully
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PagedModel'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/block/{userId}/users:
+    get:
+      tags:
+        - Block Requests Management
+      summary: Get block requests by user ID with pagination
+      description: Returns a paginated list of block requests filtered by the specified user ID
+      operationId: findAllByUserId_1
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+      responses:
+        '200':
+          description: Requests were found successfully
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PagedModel'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+  /api/v1/block/{cardId}/cards:
+    get:
+      tags:
+        - Block Requests Management
+      summary: Get block requests by card ID with pagination
+      description: Returns a paginated list of block requests filtered by the specified card ID
+      operationId: findAllByCardId_1
+      parameters:
+        - name: cardId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 0
+        - name: pageSize
+          in: query
+          required: false
+          schema:
+            type: integer
+            format: int32
+            default: 20
+      responses:
+        '200':
+          description: Requests were found successfully
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/PagedModel'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AppErrorDto'
+      security:
+        - BearerAuthentication: []
+components:
+  schemas:
+    LimitRequestDto:
+      type: object
+      description: DTO for setting a transaction limit on a specific card
+      properties:
+        cardId:
+          type: string
+          format: uuid
+          description: UUID of the card to apply the limit to
+          example: 123e4567-e89b-12d3-a456-426614174000
+        limit:
+          type: number
+          description: Limit value to be applied to the card
+          example: 5000
+          minimum: 0
+      required:
+        - cardId
+        - limit
+    FieldErrorDto:
+      type: object
+      description: DTO for errors with validation
+      properties:
+        code:
+          type: integer
+          format: int32
+          description: Error's code
+          example: 400
+        timestamp:
+          type: string
+          description: Timestamp of when the error occurred
+          example: '2025-02-07 14:30:00'
+        errors:
+          type: object
+          additionalProperties:
+            type: string
+          description: Error map describing the validation
+    AppErrorDto:
+      type: object
+      description: DTO for errors
+      properties:
+        code:
+          type: integer
+          format: int32
+          description: Error's code
+          example: 400
+        timestamp:
+          type: string
+          description: Timestamp of when the error occurred
+          example: '2025-02-07 14:30:00'
+        message:
+          type: string
+          description: Error message describing the problem
+          example: Invalid request
+    BlockCardRequestDto:
+      type: object
+      description: Request to block a card with a specific status (COMPLETED or REJECTED)
+      properties:
+        status:
+          type: string
+          description: The status of the block request. Only COMPLETED or REJECTED are allowed.
+          example: COMPLETED
+      required:
+        - status
+    BlockRequestDto:
+      type: object
+      description: DTO representing a block request for a card, containing status, timestamps, and related IDs.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier of the block request
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+        createdAt:
+          type: string
+          format: date-time
+          description: Date and time when the block request was created
+          example: '2025-05-21 15:30:00'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Date and time when the block request was last updated
+          example: '2025-05-21 16:00:00'
+        status:
+          type: string
+          description: Status of the block request
+          enum:
+            - COMPLETED
+            - REJECTED
+          example: COMPLETED
+        cardId:
+          type: string
+          format: uuid
+          description: Unique identifier of the card where the transaction was initiated
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+        userId:
+          type: string
+          format: uuid
+          description: User ID associated with the card
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    TransferRequestDto:
+      type: object
+      description: DTO for transferring funds between two cards
+      properties:
+        number:
+          type: string
+          description: Card number from which funds will be transferred
+          example: 1234567890123456
+        targetNumber:
+          type: string
+          description: Card number to which funds will be transferred
+          example: 6543210987654321
+        amount:
+          type: number
+          description: Amount to be transferred
+          example: 100
+          minimum: 5
+    TransferResponseDto:
+      type: object
+      description: Response DTO for transfer transaction details
+      properties:
+        cardId:
+          type: string
+          format: uuid
+          description: Card ID associated with the transfer
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+        number:
+          type: string
+          description: Card number associated with the transfer
+          example: 1234567890123456
+        targetCardId:
+          type: string
+          format: uuid
+          description: Target card ID for the transfer
+          example: b34f1b88-70be-413a-bf34-f3a1fa6f3a24
+        targetNumber:
+          type: string
+          description: Target card number for the transfer
+          example: 9876543210987654
+        transferAmount:
+          type: number
+          description: Amount transferred from the card
+          example: 50
+        transferTime:
+          type: string
+          format: date-time
+          description: Timestamp of the transfer transaction
+          example: '2025-04-14 14:30:00'
+        balance:
+          type: number
+          description: New balance after the transfer
+          example: 150
+        userId:
+          type: string
+          format: uuid
+          description: User ID associated with the card
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    WithdrawalRequestDto:
+      type: object
+      description: DTO for withdrawing funds from a card
+      properties:
+        number:
+          type: string
+          description: Card number from which funds will be withdrawn
+          example: 1234567890123456
+        amount:
+          type: number
+          description: Amount to be withdrawn
+          example: 50
+          minimum: 5
+    WithdrawalResponseDto:
+      type: object
+      description: Response DTO for withdrawal transaction details
+      properties:
+        cardId:
+          type: string
+          format: uuid
+          description: Card ID associated with the withdrawal
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+        number:
+          type: string
+          description: Card number associated with the withdrawal
+          example: 1234567890123456
+        withdrawalAmount:
+          type: number
+          description: Amount withdrawn from the card
+          example: 50
+        transferTime:
+          type: string
+          format: date-time
+          description: Timestamp of the withdrawal transaction
+          example: '2025-04-14 14:30:00'
+        remainingBalance:
+          type: number
+          description: Remaining balance after the withdrawal
+          example: 150
+        userId:
+          type: string
+          format: uuid
+          description: User ID associated with the card
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    RechargeRequestDto:
+      type: object
+      description: DTO for recharging a card
+      properties:
+        number:
+          type: string
+          description: Card number to recharge
+          example: 1234
+        amount:
+          type: number
+          description: Recharge amount
+          example: 100
+          minimum: 5
+    RechargeResponseDto:
+      type: object
+      description: Response DTO for recharge transaction details
+      properties:
+        cardId:
+          type: string
+          format: uuid
+          description: Card ID associated with the recharge
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+        number:
+          type: string
+          description: Card number associated with the recharge
+          example: 1234567890123456
+        rechargeAmount:
+          type: number
+          description: Amount recharged to the card
+          example: 100
+        transferTime:
+          type: string
+          format: date-time
+          description: Timestamp of the recharge transaction
+          example: '2025-04-14 14:30:00'
+        balance:
+          type: number
+          description: New balance after the recharge
+          example: 200
+        userId:
+          type: string
+          format: uuid
+          description: User ID associated with the card
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    AddCardRequestDto:
+      type: object
+      description: Request to add a new card
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: ID of the user to whom the card will be linked
+          example: 550e8400-e29b-41d4-a716-446655440000
+        number:
+          type: string
+          description: Card number in format XXXX XXXX XXXX XXXX
+          example: 1234
+      required:
+        - number
+        - userId
+    CardDto:
+      type: object
+      description: DTO representing a card with details such as number, balance, and expiration date.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the card
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+        number:
+          type: string
+          description: Card number
+          example: '**** **** **** 3456'
+        status:
+          type: string
+          description: Status of the card
+          enum:
+            - ACTIVE
+            - INACTIVE
+            - BLOCKED
+          example: ACTIVE
+        balance:
+          type: number
+          description: Current balance on the card
+          example: 1000.5
+        expirationDate:
+          type: string
+          format: date
+          description: Expiration date of the card
+          example: '2025-12-31'
+        userId:
+          type: string
+          format: uuid
+          description: User ID associated with the card
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+    RegisterUserRequestDto:
+      type: object
+      description: DTO for registering a new user
+      properties:
+        firstName:
+          type: string
+          description: LastName for the new user. Must be at least 3 characters long.
+          example: john_doe
+        lastName:
+          type: string
+          description: LastName for the new user. Must be at least 3 characters long.
+          example: john_doe
+        username:
+          type: string
+          description: Username of the new user. Must be a valid email format.
+          example: john.doe@example.com
+          maxLength: 2147483647
+          minLength: 6
+        password:
+          type: string
+          description: Password for the new user. Must be at least 6 characters long.
+          example: strongpassword123
+          maxLength: 2147483647
+          minLength: 6
+        confirmPassword:
+          type: string
+          description: Confirm password to verify the password entered by the user.
+          example: strongpassword123
+      required:
+        - confirmPassword
+        - firstName
+        - lastName
+        - password
+        - username
+    LoginUserRequestDto:
+      type: object
+      description: DTO for user login containing email and password
+      properties:
+        username:
+          type: string
+          description: User's login
+          example: vlad123
+        password:
+          type: string
+          description: User's password
+          example: q1w2e3
+      required:
+        - password
+        - username
+    JwtResponseDto:
+      type: object
+      description: DTO for JWT response containing access and refresh tokens
+      properties:
+        accessToken:
+          type: string
+          description: Access token used for authentication
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJ1c2VyQGV4YW1wbGUuY29tIiwiaWF0IjoxNjI4MjM2NzQ1fQ.k3rUfj1DikFbd1k6B3hJHfD9_xD6wM8uP9YzJ8gPrFs
+    BannedRequestDto:
+      type: object
+      description: Request to change banned status of a user or card
+      properties:
+        banned:
+          type: boolean
+          description: Indicates whether the entity should be banned (true) or unbanned (false)
+          example: true
+      required:
+        - banned
+    StatusCardRequestDto:
+      type: object
+      description: DTO for updating the card status
+      properties:
+        status:
+          type: string
+          description: New card status. The allowed values are defined in the custom @Status annotation
+          example: ACTIVE
+      required:
+        - status
+    PageMetadata:
+      type: object
+      properties:
+        size:
+          type: integer
+          format: int64
+        number:
+          type: integer
+          format: int64
+        totalElements:
+          type: integer
+          format: int64
+        totalPages:
+          type: integer
+          format: int64
+    PagedModel:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            type: object
+        page:
+          $ref: '#/components/schemas/PageMetadata'
+    UserDto:
+      type: object
+      description: DTO representing a user and their associated cards.
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the user
+          example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+        username:
+          type: string
+          description: User login
+          example: user
+        firstName:
+          type: string
+          description: First name of the user
+          example: John
+        lastName:
+          type: string
+          description: Last name of the user
+          example: Doe
+        cards:
+          type: array
+          description: List of cards associated with the user
+          items:
+            $ref: '#/components/schemas/CardDto'
+        isBan:
+          type: boolean
+          description: Ban status of the user
+          example: false
+  securitySchemes:
+    BearerAuthentication:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

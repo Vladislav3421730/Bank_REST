@@ -1,0 +1,57 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004
+      author: admin
+      changes:
+        - sql:
+            sql: |
+              CREATE TYPE card_status AS ENUM ('ACTIVE', 'BLOCKED', 'EXPIRED');
+        - createTable:
+            tableName: card
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+
+              - column:
+                  name: number
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: balance
+                  type: decimal(10,2)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: status
+                  type: card_status
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: expiration_date
+                  type: date
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            constraintName: fk_card_user
+            baseTableName: card
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+            onUpdate: CASCADE
