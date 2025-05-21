@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import java.util.UUID;
 
 public interface TransactionService {
+
     Page<TransactionDto> findAll(PageRequest pageRequest, TransactionFilterDto transactionFilterDto);
 
     Page<TransactionDto> findAllByCardId(UUID id, PageRequest pageRequest);

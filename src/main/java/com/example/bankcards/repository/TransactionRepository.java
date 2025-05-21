@@ -13,8 +13,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, UUID>,
 
     Page<Transaction> findByCardIdOrderByTimestampDesc(UUID id, PageRequest pageRequest);
 
-
-
     Page<Transaction> findByCardUserIdOrderByTimestampDesc(UUID id, PageRequest pageRequest);
 
     Page<Transaction> findByCardUserUsernameOrderByTimestampDesc(String email, PageRequest pageRequest);

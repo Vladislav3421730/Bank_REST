@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import java.util.UUID;
 
 public interface BlockRequestService {
+
     void createRequest(String username, UUID id);
 
     Page<BlockRequestDto> findAll(PageRequest pageRequest);

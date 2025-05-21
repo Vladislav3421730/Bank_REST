@@ -9,6 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import java.util.UUID;
 
 public interface UserService {
+
     void save(RegisterUserRequestDto registerUserRequestDto);
 
     void delete(UUID id, String username);

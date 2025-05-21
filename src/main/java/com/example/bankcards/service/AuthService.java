@@ -7,5 +7,6 @@ import com.example.bankcards.dto.request.RegisterUserRequestDto;
 public interface AuthService {
 
     JwtResponseDto createAuthToken(LoginUserRequestDto user);
+
     void registerUser(RegisterUserRequestDto user);
 }
